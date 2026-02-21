@@ -1,0 +1,12 @@
+# Entorno virtual
+venv/
+env/
+__pycache__/
+*.pyc
+
+# CREDENCIALES
+credenciales.json
+
+# Datos y logs
+*.log
+.DS_Store

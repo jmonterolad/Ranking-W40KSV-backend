@@ -3,18 +3,19 @@ from fastapi.middleware.cors import CORSMiddleware
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
-import json # Importante para parsear la variable de entorno
+import json
 import os
 
 app = FastAPI()
 
-# Configuración de CORS: Añade tu URL de Vercel cuando la tengas
+# Configuración de CORS: Autorizando frontend en Vercel
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173", 
         "http://127.0.0.1:5173",
-        "https://tu-proyecto-frontend.vercel.app" # Reemplaza con tu URL real
+        "https://ranking-w40-ksv.vercel.app",
+        "https://rankingw40ksv.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -28,18 +29,14 @@ def get_google_sheet_data():
     ]
 
     try:
-        # LÓGICA HÍBRIDA PARA CREDENCIALES
         google_creds_json = os.getenv("GOOGLE_SHEETS_CREDS")
         
         if google_creds_json:
-            # Si estamos en Vercel (Variable de Entorno)
             creds_dict = json.loads(google_creds_json)
             creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
         elif os.path.exists("credenciales.json"):
-            # Si estamos en Local (Archivo .json)
             creds = ServiceAccountCredentials.from_json_keyfile_name("credenciales.json", scope)
         else:
-            print("ERROR: No se encontraron credenciales (ni en ENV ni en archivo).")
             return None
 
         client = gspread.authorize(creds)
@@ -51,13 +48,14 @@ def get_google_sheet_data():
             return pd.DataFrame()
 
         df = pd.DataFrame(values[1:], columns=values[0])
+        
         df = df.loc[:, df.columns != '']
         df = df.loc[:, ~df.columns.duplicated()]
 
         return df
 
     except Exception as e:
-        print(f"ERROR CRÍTICO: {e}")
+        print(f"ERROR: {e}")
         return None
 
 @app.get("/")
@@ -70,5 +68,5 @@ async def get_ranking():
     if df is None:
         return {"error": "Error interno al conectar con Google Sheets"}
     if df.empty:
-        return {"error": "La hoja 'Catalogos' está vacía o tiene un formato inválido"}
+        return {"error": "La hoja está vacía"}
     return df.to_dict(orient="records")

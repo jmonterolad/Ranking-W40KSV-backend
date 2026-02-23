@@ -1,4 +1,4 @@
-# W40K SV Ranking Dashboard - Backend API
+# W40K SV Ranking - Backend API
 
 This repository contains the backend engine for the Warhammer 40k Ranking System. It serves as a bridge between a private **Google Sheets** database and the Vue.js frontend, providing a clean REST API using **FastAPI**.
 

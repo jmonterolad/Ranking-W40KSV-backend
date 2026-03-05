@@ -33,7 +33,7 @@ RANKINGS_CONFIG = {
         "sheet": "Catalogos"
     },
     "40k1k2026": {
-        "file": "Copia de 40K - 1KP Ranking SV 2026",
+        "file": "40K - 1KP Ranking SV 2026",
         "sheet": "Catalogos"
     }
 }
